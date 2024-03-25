@@ -10,7 +10,7 @@ class RestaurantDetailsController{
         const restaurantDetailsService = new RestaurantDetailsService()
 
         const restaurant = await restaurantDetailsService.execute(idUser)
-        
+    
         return res.json(restaurant)
     }
 }

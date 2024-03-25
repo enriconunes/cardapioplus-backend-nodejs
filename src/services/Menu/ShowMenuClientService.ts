@@ -1,29 +1,39 @@
-import { Menu, Category, Item } from "../../sequelize/sequelize";
+import { Menu, Category, Item, User, Restaurant, Schedule } from "../../sequelize/sequelize";
+import { Model } from "sequelize";
 
 class ShowMenuClientService{
 
-    async execute(idMenu: string){
-        // a query retorna o menu, as categorias do menu e os itens de cada categoria
-        const menu = await Menu.findOne({
-            where: {
-                idMenu: idMenu
+    async execute(idUser: string){
+        
+        // a rota recebe o id do user atraves da url e retorna todas as informaçoes necessarias do restaurante para o cliente
+
+        const restaurant = await Restaurant.findOne({
+        where: {
+            user_idUser: idUser
+        },
+        include: [
+            {
+                model: Schedule
             },
-            include: [
-                {
-                model: Category,
+            {
+                model: Menu,
                 include: [
                     {
-                    model: Item,
-                    where:{
-                        avaliable: true
-                    }
+                        model: Category,
+                        include: [
+                            {
+                                model: Item
+                            }
+                        ]
                     }
                 ]
-                }
-            ]
+            }
+        ]
         });
 
-        return menu
+
+
+        return restaurant
     }
 
 }

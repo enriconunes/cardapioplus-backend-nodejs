@@ -48,22 +48,22 @@ const Restaurant = sequelize.define('Restaurant', {
   name: {
     type: DataTypes.STRING(45),
     allowNull: true,
-    defaultValue: 'Indefinido'
+    defaultValue: 'Nome indefinido'
   },
   address: {
     type: DataTypes.STRING(100),
     allowNull: false,
-    defaultValue: 'Indefinido'
+    defaultValue: 'Endereço indefinido'
   },
   contactNumber: {
     type: DataTypes.STRING(45),
     allowNull: true,
-    defaultValue: 'Indefinido'
+    defaultValue: 'Contato indefinido'
   },
   instagramProfileName: {
     type: DataTypes.STRING(45),
     allowNull: true,
-    defaultValue: 'Indefinido'
+    defaultValue: 'Instragram indefinido'
   },
   doDelivery: {
     type: DataTypes.TINYINT,

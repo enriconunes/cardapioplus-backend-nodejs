@@ -7,24 +7,31 @@ class UpdateItemController{
         const { name,
                 description,
                 price,
-                imageURL,
                 avaliable,
                 vegan,
                 idItem } = req.body
-        
-        const updateItemService = new UpdateItemService()
 
-        const item = updateItemService.execute({
-            name,
-            description,
-            price,
-            imageURL,
-            avaliable,
-            vegan,
-            idItem
-        })
+        const { file } = req
 
-        return res.json(item)
+        if(!file){
+            throw new Error("Erro no upload do arquivo.");
+        } else{
+
+            const updateItemService = new UpdateItemService()
+
+            const item = await updateItemService.execute({
+                name,
+                description,
+                price,
+                avaliable,
+                vegan,
+                idItem,
+                file
+            })
+
+            return res.json(item)
+        }
+    
     }
 
 }

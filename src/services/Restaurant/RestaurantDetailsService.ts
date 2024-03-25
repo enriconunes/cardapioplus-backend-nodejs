@@ -9,12 +9,7 @@ class RestaurantDetailsService{
             where: {
                 user_idUser: idUser
             },
-            include: [{
-                model: Schedule,
-                where: {
-                    restaurant_idRestaurant: Sequelize.col('Restaurant.idRestaurant')
-                }
-            }]
+            include: Schedule
         });
 
         return(restaurant)

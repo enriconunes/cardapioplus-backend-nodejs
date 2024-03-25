@@ -1,6 +1,7 @@
 import { User, Restaurant, Schedule, Menu } from "../../sequelize/sequelize"
 import { hash } from "bcryptjs"
 import { Model } from "sequelize"
+import { sequelize } from "../../sequelize/sequelize"
 
 interface UserRequest{
     name: string,
@@ -31,38 +32,42 @@ class CreateUserService{
         // cifrar senha
         const hashPassword = await hash(password, 8)
 
-        // 'user' conterá o valor recebido pela query
-        // tipando 'user' como  'Model<any, any>' (padrao do sequelize)
-        // ou 'null' caso nao seja encontrado nada
-        const user: Model<any, any> | null = await User.create({
-            name: name, 
-            email: email,
-            password: hashPassword
-        })
+        // iniciar uma transação sql para garantir que todas as operaçoes funcione corretamente.
+        // ao criar um user, deve-se criar tambem um restaurante, um registro 'schedule' referente a ele e um menu tambem referente a ele.
+        // caso algumas dessas operacoes falhar, toda a operaçao é cancelada
+        // e o processo de cadastro é restaurado
+        try {
+            const user = await sequelize.transaction(async (t) => {
+                const user: Model<any, any> | null = await User.create({
+                    name: name, 
+                    email: email,
+                    password: hashPassword
+                }, { transaction: t });
 
-        // ao criar um user, criar tambem um restaurante associado a ele
-        // armazenar id do user para o relacionamento com o resturante associado
-        const idUser = user.get("idUser") as number;
+                const idUser = user.get("idUser") as string;
 
-        const restaurant = await Restaurant.create({
-            user_idUser : idUser, 
-            // os outros atributos sao definidos by default
-        })
+                const restaurant = await Restaurant.create({
+                    user_idUser : idUser,
+                }, { transaction: t });
 
-        // apois criar um novo restaurante, criar tambem um registro na tabela 'Schedule'
-        // referente aos dias e horarios de funcionamento do restaurante
-        const idRestaurant = restaurant.get("idRestaurant") as number;
+                const idRestaurant = restaurant.get("idRestaurant") as string;
 
-        const schedule = await Schedule.create({
-            restaurant_idRestaurant : idRestaurant,
-        })
+                const schedule = await Schedule.create({
+                    restaurant_idRestaurant : idRestaurant,
+                }, { transaction: t });
 
-        // ao criar um novo restaurante, criar tambem um registro na tabela 'menu'
-        const menu = await Menu.create({
-            restaurant_idRestaurant : idRestaurant,
-        })
+                const menu = await Menu.create({
+                    restaurant_idRestaurant : idRestaurant,
+                }, { transaction: t });
 
-        return(user)
+                // caso nao haja erro, o 'commit' é executado automaticamente
+                // e é retornado os dados do user criado
+                return user;
+        });
+        } catch (error) {
+            // se algum erro ocorrer, o rollback tambem é executado automaticamente e os dados sao restaurados
+            throw new Error("Erro ao criar uma nova conta.")
+        }
     }
 
 }

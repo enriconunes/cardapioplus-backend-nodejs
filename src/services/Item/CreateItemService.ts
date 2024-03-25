@@ -1,13 +1,14 @@
 import { Item } from "../../sequelize/sequelize";
+import { S3Storage } from "../../utils/S3Storage";
 
 interface itemProps{
     name: string,
     description: string,
     price: number,
-    imageURL: string,
     avaliable: boolean,
     vegan: boolean,
-    idCategory: number
+    idCategory: number,
+    file: Express.Multer.File
 }
 
 class CreateItemService{
@@ -16,17 +17,26 @@ class CreateItemService{
         name,
         description,
         price,
-        imageURL,
         avaliable,
         vegan,
-        idCategory
+        idCategory,
+        file
     }: itemProps){
+
+        // instanciar arquivo de configuracao do s3
+        const s3Storage = new S3Storage()
+
+        // o metodo retorna a url da imagem enviada pelo utilizador
+        const url = await s3Storage.saveFile({
+            fileName: file.filename,
+            bucketName:'cardapioplus-profile'
+        })
 
         const item = await Item.create({
             name: name,
             description: description,
             price: price,
-            imageURL: imageURL,
+            imageURL: url,
             avaliable: avaliable,
             vegan: vegan,
             category_idCategory: idCategory
