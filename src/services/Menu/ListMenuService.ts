@@ -1,5 +1,6 @@
 import { Category, Item, Menu, Restaurant } from "../../sequelize/sequelize";
 import { Model, Sequelize } from "sequelize";
+import { sequelize } from "../../sequelize/sequelize";
 
 class ListMenuService{
 
@@ -23,15 +24,16 @@ class ListMenuService{
             },
             include: [
                 {
-                model: Category,
-                include: [
-                    {
-                    model: Item
-                    }
-                ]
+                    model: Category,
+                    include: [
+                        {
+                            model: Item
+                        }
+                    ]
                 }
             ]
         });
+
 
         return(menu)
 

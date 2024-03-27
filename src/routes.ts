@@ -54,7 +54,7 @@ router.get('/cardapio', new ShowMenuClientController().handle)
 // Category routes
 router.post('/category', isAuthenticated, new CreateCategoryController().handle)
 router.put('/category', isAuthenticated, new UpdateCategoryController().handle)
-router.delete('/category', isAuthenticated, new DeleteCategoryController().handle)
+router.put('/category/delete', isAuthenticated, new DeleteCategoryController().handle)
 
 // Item routes
 router.post('/item', upload.single('image'), isAuthenticated, new CreateItemController().handle)

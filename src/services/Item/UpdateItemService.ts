@@ -24,8 +24,9 @@ class UpdateItemService{
         file
     }: itemProps){
 
-        // recuperar url da imagem do item que será atualizado
+        // recuperar url da imagem do item que será atualizado 
         // necessario para apagar a imagem do S3 antes de adicionar uma nova - economia de recursos
+        // ou para usar novamente no item caso a imagem nao seja alterada
         const lastUpdate: Model<any, any> | null = await Item.findOne({
             where: {
                 idItem: idItem
@@ -34,27 +35,35 @@ class UpdateItemService{
 
         const lastImageURL = lastUpdate.get("imageURL") as string;
 
-        // dividir a string com base no delimitador "/"
-        const parts = lastImageURL.split('/');
+        let url = lastImageURL
 
-        // pegar o último elemento do array resultante
-        // 'lastFileName' é a key usada para apagar a imagem anterior antes de inserir a nova
-        const lastFileName = parts[parts.length - 1];
+        // se o file nao for recebido, é porque o user nao adicionou uma nova foto para ele
+        // por isso, mantem a anterior
 
-        // instanciar arquivo de configuracao do s3
-        const s3Storage = new S3Storage()
+        // se o file for recebido, entao inicia o processo de troca de imagem, deletando a imagem anterior do aws
+        if(file){
+            // dividir a string com base no delimitador "/"
+            const parts = lastImageURL.split('/');
 
-        // deletar imagem antiga
-        await s3Storage.deleteFile({
-            fileName: lastFileName,
-            bucketName: 'cardapioplus-profile'
-        })
+            // pegar o último elemento do array resultante
+            // 'lastFileName' é a key usada para apagar a imagem anterior antes de inserir a nova
+            const lastFileName = parts[parts.length - 1];
 
-        // o metodo retorna a url da imagem enviada pelo utilizador
-        const url = await s3Storage.saveFile({
-            fileName: file.filename,
-            bucketName:'cardapioplus-profile'
-        })
+            // instanciar arquivo de configuracao do s3
+            const s3Storage = new S3Storage()
+
+            // deletar imagem antiga
+            await s3Storage.deleteFile({
+                fileName: lastFileName,
+                bucketName: 'cardapioplus-profile'
+            })
+
+            // o metodo retorna a url da imagem enviada pelo utilizador
+            url = await s3Storage.saveFile({
+                fileName: file.filename,
+                bucketName:'cardapioplus-profile'
+            })
+        }
 
         const item = await Item.update({
             name: name,
@@ -63,11 +72,11 @@ class UpdateItemService{
             imageURL: url,
             avaliable: avaliable,
             vegan: vegan,
-        },{
-            where: {
-                idItem: idItem
+            },{
+                where: {
+                    idItem: idItem
+                }
             }
-        }
         )
 
         return(item)

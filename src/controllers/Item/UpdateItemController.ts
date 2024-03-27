@@ -13,9 +13,6 @@ class UpdateItemController{
 
         const { file } = req
 
-        if(!file){
-            throw new Error("Erro no upload do arquivo.");
-        } else{
 
             const updateItemService = new UpdateItemService()
 
@@ -32,8 +29,6 @@ class UpdateItemController{
             return res.json(item)
         }
     
-    }
-
 }
 
 export { UpdateItemController }
