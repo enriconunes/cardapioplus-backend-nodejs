@@ -58,7 +58,7 @@ const Restaurant = sequelize.define('Restaurant', {
   contactNumber: {
     type: DataTypes.STRING(45),
     allowNull: true,
-    defaultValue: 'Contato indefinido'
+    defaultValue: '(00)00000-0000'
   },
   instagramProfileName: {
     type: DataTypes.STRING(45),
@@ -68,6 +68,10 @@ const Restaurant = sequelize.define('Restaurant', {
   doDelivery: {
     type: DataTypes.TINYINT,
     defaultValue: 0
+  },
+  deliveryFee: {
+    type: DataTypes.STRING(10),
+    defaultValue: '0.00'
   },
   profileURL: {
     type: DataTypes.TEXT,
@@ -88,7 +92,7 @@ const Menu = sequelize.define('Menu', {
   }
 }, {
   tableName: 'menu',
-  timestamps: true
+  timestamps: false
 });
 
 // Definição do modelo Category
@@ -118,19 +122,19 @@ const Item = sequelize.define('Item', {
   },
   name: {
     type: DataTypes.STRING(45),
-    allowNull: true
+    allowNull: false
   },
   description: {
     type: DataTypes.STRING(255),
-    allowNull: true
+    allowNull: false
   },
   price: {
-    type: DataTypes.STRING(45),
-    allowNull: true
+    type: DataTypes.STRING(10),
+    allowNull: false
   },
   imageURL: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: false
   },
   avaliable: {
     type: DataTypes.TINYINT,
@@ -155,27 +159,27 @@ const Schedule = sequelize.define('Schedule', {
   },
   monIsOpen: {
     type: DataTypes.BOOLEAN,
-    defaultValue: 0
+    defaultValue: 1
   },
   tueIsOpen: {
     type: DataTypes.BOOLEAN,
-    defaultValue: 0
+    defaultValue: 1
   },
   wedIsOpen: {
     type: DataTypes.BOOLEAN,
-    defaultValue: 0
+    defaultValue: 1
   },
   thuIsOpen: {
     type: DataTypes.BOOLEAN,
-    defaultValue: 0
+    defaultValue: 1
   },
   friIsOpen: {
     type: DataTypes.BOOLEAN,
-    defaultValue: 0
+    defaultValue: 1
   },
   satIsOpen: {
     type: DataTypes.BOOLEAN,
-    defaultValue: 0
+    defaultValue: 1
   },
   sunIsOpen: {
     type: DataTypes.BOOLEAN,
@@ -183,31 +187,31 @@ const Schedule = sequelize.define('Schedule', {
   },
   monDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Aberto das 08h00 às 22h00'
   },
   tueDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Aberto das 08h00 às 22h00'
   },
   wedDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Aberto das 08h00 às 22h00'
   },
   thuDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Aberto das 08h00 às 22h00'
   },
   friDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Aberto das 08h00 às 22h00'
   },
   satDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Aberto das 08h00 às 22h00'
   },
   sunDescription: {
     type: DataTypes.TEXT,
-    defaultValue: 'Sem descrição'
+    defaultValue: 'Fechado aos domingos'
   },
   display: {
     type: DataTypes.BOOLEAN,
@@ -215,7 +219,60 @@ const Schedule = sequelize.define('Schedule', {
   }
 }, {
   tableName: 'schedule',
+  timestamps: false
+});
+
+// Definição do modelo Pedido
+const Order = sequelize.define('Order', {
+  idOrder: {
+    type: UUID,
+    defaultValue: UUIDV4,
+    primaryKey: true,
+    allowNull: false
+  },
+  typeOrder: {
+    type: DataTypes.ENUM('store', 'delivery'),
+    allowNull: false
+  },
+  totalPrice: {
+    type: DataTypes.STRING(10),
+    allowNull: false
+  },
+  statusOrder: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: 1,
+    allowNull: false
+  },
+  note: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+  table: {
+    type: DataTypes.STRING(45),
+    allowNull: true
+  },
+  clientContact: {
+    type: DataTypes.STRING(45),
+    allowNull: true
+  },
+  clientAddress: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  }
+}, {
+  tableName: 'order',
   timestamps: true
+});
+
+// Definição do modelo ItemPedido
+const OrderItem = sequelize.define('OrderItem', {
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  }
+}, {
+  tableName: 'order_item',
+  timestamps: false
 });
 
 // Definição das associações entre os modelos
@@ -234,4 +291,15 @@ Schedule.belongsTo(Restaurant, { foreignKey: 'restaurant_idRestaurant' });
 User.hasOne(Restaurant, { foreignKey: 'user_idUser' });
 Restaurant.belongsTo(User, { foreignKey: 'user_idUser' });
 
-export { User, Restaurant, Menu, Category, Item, Schedule, sequelize };
+// Definir relacionamento entre Order e OrderItem (1:N)
+Order.hasMany(OrderItem, { foreignKey: 'idOrder' });
+OrderItem.belongsTo(Order, { foreignKey: 'idOrder' });
+
+// Definir relacionamento entre Item e OrderItem (1:N)
+Item.hasMany(OrderItem, { foreignKey: 'idItem' });
+OrderItem.belongsTo(Item, { foreignKey: 'idItem' });
+
+// Definir relacionamento entre Order e Restaurant (N:1)
+Order.belongsTo(Restaurant, { foreignKey: 'idRestaurant' });
+
+export { User, Restaurant, Menu, Category, Item, Schedule, Order, OrderItem, sequelize };

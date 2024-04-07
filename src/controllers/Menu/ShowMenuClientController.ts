@@ -6,6 +6,7 @@ class ShowMenuClientController{
     async handle(req: Request, res: Response){
 
         const idUser = req.query.id as string
+        // const { idUser } = req.body
 
         const showMenuClientService = new ShowMenuClientService()
 

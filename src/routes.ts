@@ -29,6 +29,9 @@ import { UpdateItemController } from "./controllers/Item/UpdateItemController";
 import { ItemDetailsController } from "./controllers/Item/ItemDetailsController";
 import { DeleteItemController } from "./controllers/Item/DeleteItemController";
 
+// Order Controllers
+import { CreateOrderController } from "./controllers/Order/CreateOrderController";
+
 // Configuração do multer
 import multer from "multer";
 import multerConfig from "./config/multer"
@@ -49,7 +52,7 @@ router.put('/avatarProfile', isAuthenticated, upload.single('image'), new Upload
 
 // Menu routes
 router.get('/menu', isAuthenticated, new ListMenuController().handle)
-router.get('/cardapio', new ShowMenuClientController().handle)
+router.get('/menuclient', new ShowMenuClientController().handle)
 
 // Category routes
 router.post('/category', isAuthenticated, new CreateCategoryController().handle)
@@ -60,6 +63,9 @@ router.put('/category/delete', isAuthenticated, new DeleteCategoryController().h
 router.post('/item', upload.single('image'), isAuthenticated, new CreateItemController().handle)
 router.put('/item', upload.single('image'), isAuthenticated, new UpdateItemController().handle)
 router.get('/item', isAuthenticated, new ItemDetailsController().handle)
-router.delete('/item', isAuthenticated, new DeleteItemController().handle)
+router.put('/item/delete', isAuthenticated, new DeleteItemController().handle)
+
+// Order routes
+router.post('/order', new CreateOrderController().handle)
 
 export { router }
