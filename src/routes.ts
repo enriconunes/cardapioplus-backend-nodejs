@@ -31,6 +31,8 @@ import { DeleteItemController } from "./controllers/Item/DeleteItemController";
 
 // Order Controllers
 import { CreateOrderController } from "./controllers/Order/CreateOrderController";
+import { CloseOrderController } from "./controllers/Order/CloseOrderController";
+import { ListOrderController } from "./controllers/Order/ListOrdersController";
 
 // Configuração do multer
 import multer from "multer";
@@ -67,5 +69,7 @@ router.put('/item/delete', isAuthenticated, new DeleteItemController().handle)
 
 // Order routes
 router.post('/order', new CreateOrderController().handle)
+router.put('/order', isAuthenticated, new CloseOrderController().handle)
+router.get('/order', isAuthenticated, new ListOrderController().handle)
 
 export { router }

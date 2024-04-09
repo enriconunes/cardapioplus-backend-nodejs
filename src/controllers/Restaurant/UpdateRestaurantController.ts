@@ -7,7 +7,7 @@ class UpdateRestaurantController{
 
         const user_idUser = req.idUser
 
-        const { name, address, contactNumber, instagramProfileName, doDelivery } = req.body
+        const { name, address, contactNumber, instagramProfileName, doDelivery, deliveryFee } = req.body
 
         const updateRestaurantService = new UpdateRestaurantService()
 
@@ -17,7 +17,8 @@ class UpdateRestaurantController{
             address: address,
             contactNumber: contactNumber,
             instagramProfileName: instagramProfileName,
-            doDelivery: doDelivery
+            doDelivery: doDelivery,
+            deliveryFee: deliveryFee
         })
 
         return res.json(restaurant)

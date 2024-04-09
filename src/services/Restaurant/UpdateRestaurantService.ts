@@ -7,18 +7,20 @@ interface RestaurantRequest{
     contactNumber: string,
     instagramProfileName: string,
     doDelivery: boolean,
+    deliveryFee: string
 }
 
 class UpdateRestaurantService{
 
-    async execute({user_idUser, name, address, contactNumber, instagramProfileName, doDelivery}: RestaurantRequest){
+    async execute({user_idUser, name, address, contactNumber, instagramProfileName, doDelivery, deliveryFee}: RestaurantRequest){
 
         const restaurant = await Restaurant.update({
                 name: name,
                 address: address,
                 contactNumber: contactNumber,
                 instagramProfileName: instagramProfileName,
-                doDelivery: doDelivery
+                doDelivery: doDelivery,
+                deliveryFee: deliveryFee
             },
             {
                 where: {
