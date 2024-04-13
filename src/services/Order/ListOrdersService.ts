@@ -3,12 +3,18 @@ import { Model } from "sequelize";
 
 interface ordersProps{
     idUser: string,
-    typeOrder: string
+    typeOrder: string,
+    createdAt: string //ASC or DESC
 }
 
 class ListOrderService{
 
-    async execute({idUser, typeOrder}: ordersProps){
+    async execute({idUser, typeOrder, createdAt}: ordersProps){
+
+
+        if(createdAt !== 'ASC' && createdAt !== 'DESC'){
+            throw new Error("Invalid params to order by createdAt column.")
+        }
 
         // identificar id do restaurante a partir do id do user recebido no request
         const restaurant: Model<any, any> | null = await Restaurant.findOne({
@@ -34,7 +40,7 @@ class ListOrderService{
                         model: Item,
                     }]
                 }],
-                order: [['createdAt', 'DESC']] // Ordenar por createdAt de forma descendente
+                order: [['createdAt', createdAt]] // ASC or DESC
             });
         } else if(typeOrder === 'store' || typeOrder === 'delivery'){
             orders = await Order.findAll({
@@ -48,7 +54,7 @@ class ListOrderService{
                         model: Item,
                     }]
                 }],
-                order: [['createdAt', 'DESC']] // Ordenar por createdAt de forma descendente
+                order: [['createdAt', createdAt]] // ASC or DESC
             });
         } else{
             throw new Error("Invalid params to request the API.")

@@ -20,7 +20,7 @@ app.use(router)
 //   })
 //   .catch((err: Error) => {
 //     console.error('Erro ao sincronizar modelos com o banco de dados:', err);
-//   });
+//   }); 
 
 // todas as rotas vao passar por esse middleware
 // rota para tratamento de erro

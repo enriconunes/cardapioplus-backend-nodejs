@@ -11,13 +11,15 @@ class ListOrderController{
         //recuperar o typeOrder para filtrar entre pedidos em loja ou pedidos para delivery
         const typeOrder = req.query.typeOrder as string
 
-        console.log("TIPO REECBIDO: ", typeOrder)
+        // createdAt = "ASC" or "DESC"
+        const createdAt = req.query.createdAt as string
         
         const listOrderService = new ListOrderService()
-
+  
         const orders = await listOrderService.execute({
             idUser,
-            typeOrder
+            typeOrder,
+            createdAt
         })
 
         return res.status(200).json(orders)

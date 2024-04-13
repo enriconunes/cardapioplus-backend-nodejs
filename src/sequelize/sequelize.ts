@@ -73,6 +73,10 @@ const Restaurant = sequelize.define('Restaurant', {
     type: DataTypes.STRING(10),
     defaultValue: '0.00'
   },
+  deliveryTime: {
+    type: DataTypes.STRING(5),
+    defaultValue: '30'
+  },
   profileURL: {
     type: DataTypes.TEXT,
     defaultValue: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Circle-icons-image.svg/768px-Circle-icons-image.svg.png'
@@ -228,6 +232,12 @@ const Order = sequelize.define('Order', {
     type: UUID,
     defaultValue: UUIDV4,
     primaryKey: true,
+    allowNull: false
+  },
+  number: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    unique: true,
     allowNull: false
   },
   typeOrder: {

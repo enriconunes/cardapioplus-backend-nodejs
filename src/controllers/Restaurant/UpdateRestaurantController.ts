@@ -7,10 +7,10 @@ class UpdateRestaurantController{
 
         const user_idUser = req.idUser
 
-        const { name, address, contactNumber, instagramProfileName, doDelivery, deliveryFee } = req.body
+        const { name, address, contactNumber, instagramProfileName, doDelivery, deliveryFee, deliveryTime } = req.body
 
         const updateRestaurantService = new UpdateRestaurantService()
-
+ 
         const restaurant = await updateRestaurantService.execute({
             user_idUser: user_idUser,
             name: name,
@@ -18,7 +18,8 @@ class UpdateRestaurantController{
             contactNumber: contactNumber,
             instagramProfileName: instagramProfileName,
             doDelivery: doDelivery,
-            deliveryFee: deliveryFee
+            deliveryFee: deliveryFee,
+            deliveryTime: deliveryTime
         })
 
         return res.json(restaurant)
