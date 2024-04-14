@@ -34,40 +34,52 @@ class CreateOrderService {
         const transaction = await sequelize.transaction();
 
         try {
-            // Criar novo registro na tabela Order dentro da transação
-            const order: Model<any, any> | null = await Order.create({
-                typeOrder: typeOrder,
-                totalPrice: totalPrice,
-                note: note,
-                table: table,
-                clientContact: clientContact,
-                clientAddress: clientAddress,
-                idRestaurant: idRestaurant
+    // Consultar o último número de pedido para o restaurante específico
+    const lastOrder: Model<any, any> | null = await Order.findOne({
+        where: { idRestaurant },
+        order: [['number', 'DESC']], // Ordenar em ordem decrescente para obter o último pedido
+        transaction
+    });
+
+    // Determinar o próximo número de pedido
+    const nextOrderNumber = lastOrder ? (lastOrder.get("number") as number) + 1 : 1;
+
+    // Criar novo registro na tabela Order dentro da transação
+    const order: Model<any, any> | null = await Order.create({
+        typeOrder,
+        totalPrice,
+        note,
+        table,
+        clientContact,
+        clientAddress,
+        idRestaurant,
+        number: nextOrderNumber // Definir o número do pedido
+    }, { transaction });
+
+    const idOrder = order.get("idOrder") as string;
+
+    // Adicionar os itens do pedido na tabela OrderItem um por um dentro da transação
+    await Promise.all(
+        items.map(async (item) => {
+            await OrderItem.create({
+                idOrder,
+                idItem: item.idItem,
+                quantity: item.quantity
             }, { transaction });
+        })
+    );
 
-            const idOrder = order.get("idOrder") as string;
+    // Se tudo ocorrer bem, confirma a transação
+    await transaction.commit();
 
-            // Adicionar os itens do pedido na tabela OrderItem um por um dentro da transação
-            await Promise.all(
-                items.map(async (item) => {
-                    await OrderItem.create({
-                        idOrder: idOrder,
-                        idItem: item.idItem,
-                        quantity: item.quantity
-                    }, { transaction });
-                })
-            );
+    return { ok: 200, idOrder };
+} catch (error) {
+    // Se houver algum erro, desfaz a transação
+    console.log(error);
+    await transaction.rollback();
+    throw error;
+}
 
-            // Se tudo ocorrer bem, confirma a transação
-            await transaction.commit();
-
-            return { ok: 200, idOrder: idOrder };
-        } catch (error) {
-            // Se houver algum erro, desfaz a transação
-            console.log(error)
-            await transaction.rollback();
-            throw error;
-        }
     }
 
 }

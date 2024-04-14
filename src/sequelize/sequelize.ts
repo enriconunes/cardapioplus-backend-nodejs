@@ -236,8 +236,6 @@ const Order = sequelize.define('Order', {
   },
   number: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
-    unique: true,
     allowNull: false
   },
   typeOrder: {
