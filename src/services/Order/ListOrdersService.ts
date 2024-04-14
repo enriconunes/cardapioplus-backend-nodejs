@@ -4,13 +4,13 @@ import { Model } from "sequelize";
 interface ordersProps{
     idUser: string,
     typeOrder: string,
-    createdAt: string //ASC or DESC
+    createdAt: string, //ASC or DESC
+    status: string
 }
 
 class ListOrderService{
 
-    async execute({idUser, typeOrder, createdAt}: ordersProps){
-
+    async execute({idUser, typeOrder, createdAt, status}: ordersProps){
 
         if(createdAt !== 'ASC' && createdAt !== 'DESC'){
             throw new Error("Invalid params to order by createdAt column.")
@@ -33,6 +33,7 @@ class ListOrderService{
             orders = await Order.findAll({
                 where: {
                     idRestaurant: idRestaurant,
+                    statusOrder: status
                 },
                 include: [{
                     model: OrderItem,
@@ -46,7 +47,8 @@ class ListOrderService{
             orders = await Order.findAll({
                 where: {
                     idRestaurant: idRestaurant,
-                    typeOrder: typeOrder
+                    typeOrder: typeOrder,
+                    statusOrder: status
                 },
                 include: [{
                     model: OrderItem,

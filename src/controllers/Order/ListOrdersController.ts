@@ -13,13 +13,17 @@ class ListOrderController{
 
         // createdAt = "ASC" or "DESC"
         const createdAt = req.query.createdAt as string
+
+        // status '1' or '0'
+        const status = req.query.status as string
         
         const listOrderService = new ListOrderService()
   
         const orders = await listOrderService.execute({
             idUser,
             typeOrder,
-            createdAt
+            createdAt,
+            status
         })
 
         return res.status(200).json(orders)
