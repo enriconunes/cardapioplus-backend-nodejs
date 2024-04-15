@@ -36,12 +36,10 @@ import { ListOrderController } from "./controllers/Order/ListOrdersController";
 
 // Configuração do multer
 import multer from "multer";
-// import multerConfig from "./config/multer"
-
+import multerConfig from "./config/multer"
 
 const router = Router();
-// const upload = multer(multerConfig)
-const upload = multer()
+const upload = multer(multerConfig)
 
 // User routes
 router.post('/user', new CreateUserController().handle)
