@@ -9,7 +9,8 @@ const { DB_NAME, DB_HOST, DB_PASSWORD, DB_USER } = process.env;
 // Configurações de conexão com o banco de dados
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
-  dialect: 'mysql'
+  dialect: 'mysql',
+  dialectModule: require('mysql2'),
 });
 
 // Definição do modelo User
